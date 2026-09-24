@@ -39,51 +39,29 @@ export default function DevicesScreen() {
 
       {devices.map((device) => (
 
-        <View
-          key={device.id}
-          style={styles.deviceCard}
-        >
-
+        <View key={device.id} style={styles.deviceCard}>
           <View style={styles.deviceInfo}>
-
             <View style={styles.iconContainer}>
-
-              <Ionicons
-                name={device.icon}
-                size={28}
-              />
-
+              <Ionicons name={device.icon} size={28}/>
             </View>
 
             <View style={styles.deviceDetails}>
-
               <Text style={styles.deviceName}>
                 {device.name}
               </Text>
-
               <Text style={styles.deviceType}>
                 {device.type}
               </Text>
-
               <Text style={styles.deviceState}>
                 {device.status ? 'ON' : 'OFF'}
               </Text>
-
             </View>
-
           </View>
 
-          <Switch
-            value={device.status}
-            onValueChange={(value) => {
-              toggleDevice(device.id, value);
-            }}
-          />
-
+          <Switch value={device.status}onValueChange={(value) => { toggleDevice(device.id, value);}}/>
         </View>
 
       ))}
-
     </ScrollView>
   );
 }
