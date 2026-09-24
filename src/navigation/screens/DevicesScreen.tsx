@@ -98,8 +98,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 18,
     borderRadius: 15,
-    backgroundColor: '#0678ca17',
+    backgroundColor: '#ffffff',
     marginBottom: 15,
+    borderWidth: 2,
   },
 
   deviceInfo: {

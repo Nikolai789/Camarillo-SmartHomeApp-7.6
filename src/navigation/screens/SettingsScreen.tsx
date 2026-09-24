@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: '#eeeeee',
     marginBottom: 12,
+    borderWidth: 2,
   },
 
   settingInfo: {

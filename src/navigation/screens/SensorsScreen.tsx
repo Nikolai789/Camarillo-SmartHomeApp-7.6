@@ -128,24 +128,26 @@ const styles = StyleSheet.create({
   refreshButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#dfeafc',
+    backgroundColor: '#ffffff',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
     gap: 6,
+    borderWidth: 2,
   },
 
   refreshButtonText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#111827',
+    color: '#526a9c',
   },
 
   sensorCard: {
     padding: 20,
     borderRadius: 15,
-    backgroundColor: '#cedaf4',
+    backgroundColor: '#ffffff',
     marginBottom: 15,
+    borderWidth: 2,
   },
 
   sensorHeader: {
