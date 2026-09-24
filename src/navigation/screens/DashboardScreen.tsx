@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView, } from 'react-native';
+import { View, Text, StyleSheet, Switch, ScrollView, Pressable, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 import { useIoT } from '../context/IoTContext';
 
+type DrawerParamList = {
+    Dashboard: undefined;
+    Sensors: undefined;
+    Devices: undefined;
+    Settings: undefined;
+};
 
 
 export default function DashboardScreen() {
 
     const { devices, sensors } = useIoT();
+    const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
     return (
         <ScrollView style={styles.container}>
 
@@ -26,7 +35,7 @@ export default function DashboardScreen() {
                         <Ionicons
                             name="thermometer-outline"
                             size={22}
-                            color="#fff"
+                            color="#000000"
                         />
 
                         <Text style={styles.sensorLabel}>
@@ -44,7 +53,7 @@ export default function DashboardScreen() {
                         <Ionicons
                             name="water-outline"
                             size={22}
-                            color="#fff"
+                            color="#020202"
                         />
 
                         <Text style={styles.sensorLabel}>
@@ -93,11 +102,14 @@ export default function DashboardScreen() {
             ))}
 
             
-            <View style={styles.deviceTip}>
+            <Pressable
+                style={styles.deviceTip}
+                onPress={() => navigation.navigate('Devices')}
+            >
                 <Text style={styles.deviceTipText}>
-                    -- Change device status in device section --
+                    update device status in the <span style={{ fontWeight: 'bold', color: '#0285ff', textDecoration: 'underline' }}>Devices</span> tab
                 </Text>
-            </View>
+            </Pressable>
         </ScrollView>
     );
 }
@@ -129,19 +141,20 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         borderRadius: 12,
-        backgroundColor: '#0679ca',
+        backgroundColor: '#ffffff',
+        borderWidth: 3,
     },
 
     sensorLabel: {
         fontSize: 14,
-        color: '#fff',
+        color: '#0c0c0c',
         fontWeight: 'bold',
     },
 
     sensorValue: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#0c0c0c',
         marginTop: 10,
     },
 
@@ -158,7 +171,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 18,
         borderRadius: 12,
-        backgroundColor: '#0678ca17',
+        backgroundColor: '#ffffff',
+        borderWidth: 3,
         marginBottom: 15,
     },
 
