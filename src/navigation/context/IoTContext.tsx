@@ -1,85 +1,108 @@
 import React, {
     createContext,
     useContext,
+    useEffect,
     useState,
 } from 'react';
 
-type SensorData = {
-    temperature: number;
-    humidity: number;
-    lightLevel: number;
-};
-
-const devices = [
-    {
-        id: 1,
-        name: 'Living Room Light',
-        type: 'Smart Light',
-        icon: 'bulb-outline' as const,
-        status: true,
-    },
-    {
-        id: 2,
-        name: 'Bedroom Fan',
-        type: 'Smart Fan',
-        icon: 'sync-outline' as const,
-        status: false,
-    },
-    {
-        id: 3,
-        name: 'Front Door Lock',
-        type: 'Smart Lock',
-        icon: 'lock-closed-outline' as const,
-        status: true,
-    },
-];
+import {
+    type Device,
+    type SensorData,
+    initialDevices,
+} from '../../models/IoTModels';
+import {
+    getDevices,
+    getSensorData,
+    updateDeviceStatus,
+} from '../../services/IoTService';
 
 type IoTContextType = {
-    devices: typeof devices;
+    devices: Device[];
     sensors: SensorData;
-    toggleDevice: (id: number, value: boolean) => void;
+    toggleDevice: (id: number, value: boolean) => Promise<void>;
+    refreshSensors: () => Promise<void>;
+    isProcessing: boolean;
 };
 
-const IoTContext = createContext<IoTContextType | undefined>(
-    undefined
-);
+const IoTContext = createContext<IoTContextType | undefined>(undefined);
 
 export function IoTProvider({
     children,
 }: {
     children: React.ReactNode;
 }) {
-
-    const [deviceStatus, setDeviceStatus] = useState(
-        devices.reduce((acc, device) => {
+    const [deviceStatus, setDeviceStatus] = useState<Record<number, boolean>>(
+        initialDevices.reduce((acc: Record<number, boolean>, device) => {
             acc[device.id] = device.status;
-
             return acc;
-        }, {} as Record<number, boolean>)
+        }, {})
     );
 
-    const toggleDevice = (
-        id: number,
-        value: boolean
-    ) => {
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [sensors, setSensors] = useState<SensorData>({
+        temperature: 28,
+        humidity: 65,
+        lightLevel: 720,
+    });
 
-        setDeviceStatus({
-            ...deviceStatus,
-            [id]: value,
-        });
+    const loadInitialData = async () => {
+        try {
+            const [devicesFromApi, sensorDataFromApi] = await Promise.all([
+                getDevices(),
+                getSensorData(),
+            ]);
 
+            const mappedStatus = devicesFromApi.reduce((acc, device) => {
+                acc[device.id] = device.status;
+                return acc;
+            }, {} as Record<number, boolean>);
+
+            setDeviceStatus(mappedStatus);
+            setSensors(sensorDataFromApi);
+        } catch (error) {
+            console.warn('Failed to load IoT data', error);
+            setDeviceStatus(
+                initialDevices.reduce((acc, device) => {
+                    acc[device.id] = device.status;
+                    return acc;
+                }, {} as Record<number, boolean>)
+            );
+        }
     };
 
-    const updatedDevices = devices.map((device) => ({
+    useEffect(() => {
+        void loadInitialData();
+    }, []);
+
+    const toggleDevice = async (id: number, value: boolean) => {
+        setIsProcessing(true);
+
+        try {
+            const updatedDevice = await updateDeviceStatus(id, value);
+            setDeviceStatus((prev) => ({
+                ...prev,
+                [updatedDevice.id]: updatedDevice.status,
+            }));
+        } catch (error) {
+            console.warn('Failed to update device status', error);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const refreshSensors = async () => {
+        try {
+            const nextSensorData = await getSensorData();
+            setSensors(nextSensorData);
+        } catch (error) {
+            console.warn('Failed to refresh sensor data', error);
+        }
+    };
+
+    const updatedDevices: Device[] = initialDevices.map((device) => ({
         ...device,
         status: deviceStatus[device.id],
     }));
-
-    const sensors: SensorData = {
-        temperature: 100,
-        humidity: 99,
-        lightLevel: 1000,
-    };
 
     return (
         <IoTContext.Provider
@@ -87,6 +110,8 @@ export function IoTProvider({
                 devices: updatedDevices,
                 sensors,
                 toggleDevice,
+                refreshSensors,
+                isProcessing,
             }}
         >
             {children}
@@ -95,13 +120,10 @@ export function IoTProvider({
 }
 
 export function useIoT() {
-
     const context = useContext(IoTContext);
 
     if (!context) {
-        throw new Error(
-            'useIoT must be used inside IoTProvider'
-        );
+        throw new Error('useIoT must be used inside IoTProvider');
     }
 
     return context;

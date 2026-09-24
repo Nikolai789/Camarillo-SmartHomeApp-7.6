@@ -14,31 +14,19 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function CustomDrawerContent(props: any) {
     return (
-        <DrawerContentScrollView
-            {...props}
-            contentContainerStyle={styles.container}
-        >
-
+        <DrawerContentScrollView contentContainerStyle={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-
                 <View style={styles.logoContainer}>
-                    <Ionicons
-                        name="hardware-chip-outline"
-                        size={40}
-                    />
+                    <Ionicons name="hardware-chip-outline" size={40}/>
                 </View>
-
                 <Text style={styles.title}>
                     IoT Home
                 </Text>
-
                 <Text style={styles.subtitle}>
                     Smart Environment
                 </Text>
-
             </View>
-
             {/* Navigation Items */}
             <View style={styles.menu}>
                 <DrawerItemList {...props} />
