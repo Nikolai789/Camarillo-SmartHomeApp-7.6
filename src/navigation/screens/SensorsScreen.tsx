@@ -3,12 +3,38 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  ScrollView, 
+  ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
+import { useIoT } from '../../context/IoTContext';
 
 export default function SensorsScreen() {
+
+  const { sensors, sensorsLoading, sensorError, refresh } = useIoT();
+
+  if (sensorsLoading) {
+    return (
+      <View style = {styles.centered}>
+        <ActivityIndicator size = "large"/>
+        <Text>Refreshing Sensors...</Text>
+      </View>
+    );
+  }
+
+  if (sensorError || !sensors) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{sensorError ?? 'Unable to retrieve sensor data.'}</Text>
+        <TouchableOpacity onPress={refresh} style={styles.retryButton}>
+          <Text style={styles.retryText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
 
@@ -38,7 +64,7 @@ export default function SensorsScreen() {
         </View>
 
         <Text style={styles.sensorValue}>
-          28°C
+          {sensors?.temperature}°C
         </Text>
 
         <Text style={styles.sensorDescription}>
@@ -64,7 +90,7 @@ export default function SensorsScreen() {
         </View>
 
         <Text style={styles.sensorValue}>
-          65%
+          {sensors?.humidity}%
         </Text>
 
         <Text style={styles.sensorDescription}>
@@ -90,7 +116,7 @@ export default function SensorsScreen() {
         </View>
 
         <Text style={styles.sensorValue}>
-          720 lux
+          {sensors?.lightLevel} lux
         </Text>
 
         <Text style={styles.sensorDescription}>
@@ -124,7 +150,7 @@ const styles = StyleSheet.create({
   sensorCard: {
     padding: 20,
     borderRadius: 15,
-    backgroundColor: '#cedaf4',
+    backgroundColor: '#eeeeee',
     marginBottom: 15,
   },
 
@@ -150,4 +176,26 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  errorText: {
+    textAlign: 'center',
+  },
+
+  retryButton: {
+    marginTop: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#eeeeee',
+  },
+
+  retryText: {
+    color: '#0066cc',
+    fontWeight: 'bold',
+  },
 });

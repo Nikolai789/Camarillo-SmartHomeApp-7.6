@@ -6,18 +6,34 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
+  ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 
-import { useIoT } from '../context/IoTContext';
+import { useIoT } from '../../context/IoTContext';
 
 export default function DevicesScreen() {
 
   const {
     devices,
     toggleDevice,
+    gatewayConnected,
+    pendingDeviceIds,
+    devicesLoading,
+    deviceError,
+    refresh,
   } = useIoT();
+
+  if (devicesLoading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.loadingText}>Loading devices...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -29,6 +45,18 @@ export default function DevicesScreen() {
       <Text style={styles.subtitle}>
         Control your connected devices
       </Text>
+
+      {!gatewayConnected && (
+        <Text style={styles.errorText}>IoT Gateway is disconnected.</Text>
+      )}
+      {deviceError && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{deviceError}</Text>
+          <TouchableOpacity onPress={refresh}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {devices.map((device) => (
 
@@ -65,9 +93,13 @@ export default function DevicesScreen() {
             </View>
 
           </View>
+          {pendingDeviceIds.includes(device.id) && (
+            <Text style={styles.updatingText}>Updating...</Text>
+          )}
 
           <Switch
             value={device.status}
+            disabled={!gatewayConnected || pendingDeviceIds.includes(device.id)}
             onValueChange={(value) => {
               toggleDevice(device.id, value);
             }}
@@ -142,5 +174,28 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 5,
   },
-
+  updatingText: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    color: '#888',
+    marginTop: 3,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+  },
+  errorContainer: {
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#b00020',
+    marginBottom: 8,
+  },
+  retryText: {
+    color: '#0066cc',
+    fontWeight: 'bold',
+  },
 });

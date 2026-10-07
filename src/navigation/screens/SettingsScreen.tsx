@@ -120,7 +120,7 @@ export default function SettingsScreen() {
             </Text>
 
             <Text style={styles.settingDescription}>
-              Darker application appearance
+              Use a darker application appearance
             </Text>
 
           </View>
