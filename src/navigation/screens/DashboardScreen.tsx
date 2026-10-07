@@ -13,7 +13,7 @@ export default function DashboardScreen() {
     //     }, {} as Record<number, boolean>)
     // );
 
-    const { devices, toggleDevice } = useIoT();
+    const { devices, sensors, toggleDevice } = useIoT();
     return (
         <View style={styles.container}>
 
@@ -40,7 +40,7 @@ export default function DashboardScreen() {
                     </View>
 
                     <Text style={styles.sensorValue}>
-                        28°C
+                        {sensors ? `${sensors.temperature}°C` : '--'}
                     </Text>
                 </View>
 
@@ -57,7 +57,7 @@ export default function DashboardScreen() {
                     </View>
 
                     <Text style={styles.sensorValue}>
-                        65%
+                        {sensors ? `${sensors.humidity}%` : '--'}
                     </Text>
                 </View>
 

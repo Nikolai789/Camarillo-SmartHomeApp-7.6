@@ -17,6 +17,8 @@ export default function DevicesScreen() {
   const {
     devices,
     toggleDevice,
+    loading,
+    error,
   } = useIoT();
 
   return (
@@ -29,6 +31,9 @@ export default function DevicesScreen() {
       <Text style={styles.subtitle}>
         Control your connected devices
       </Text>
+
+      {loading && <Text>Loading devices...</Text>}
+      {error && <Text style={styles.error}>{error}</Text>}
 
       {devices.map((device) => (
 
@@ -141,6 +146,11 @@ const styles = StyleSheet.create({
   deviceState: {
     fontSize: 12,
     marginTop: 5,
+  },
+
+  error: {
+    color: '#b00020',
+    marginBottom: 12,
   },
 
 });
