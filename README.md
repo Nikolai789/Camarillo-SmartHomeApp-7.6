@@ -1,2 +1,2 @@
-﻿# Camarillo-SmartHomeApp-7.6
-Week 09_work 09
+﻿# Buena-SmartHomeApp-7.6
+Prog Lang project activity
